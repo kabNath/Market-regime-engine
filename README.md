@@ -1,4 +1,5 @@
 # market-regime-engine
+
 [![tests](https://github.com/kabNath/market-regime-engine/actions/workflows/tests.yml/badge.svg)](https://github.com/kabNath/market-regime-engine/actions/workflows/tests.yml)
 ![Python](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12-blue)
 ![License: MIT](https://img.shields.io/badge/license-MIT-green)
@@ -31,12 +32,12 @@ Most public trading repos stop at a backtest and a Sharpe ratio. In production, 
                 price / returns
                        │
         ┌──────────────┼───────────────┐
-        ▼              ▼               ▼
-   RegimeDetector   allocation    HealthMonitor
-   6 indicators     inverse-vol   data integrity
-   → BULL/NEUTRAL  vol targeting  drawdown kill-switch
-     /BEAR/CRISIS  exposure cap   regime stability
-        │           top-N         crisis routing
+        ▼              ▼                ▼
+   RegimeDetector   allocation     HealthMonitor
+   6 indicators     inverse-vol    data integrity
+   → BULL/NEUTRAL   vol targeting  drawdown kill-switch
+     /BEAR/CRISIS   exposure cap   regime stability
+        │           top-N          crisis routing
         └──────────────┼───────────────┘
                        ▼
               HealthReport (OK / WARN / CRITICAL, tradeable flag)
@@ -55,6 +56,26 @@ A battery of checks that runs every cycle and produces a structured, machine- an
 - **Model behaviour** — regime-flip instability and crisis-state routing.
 
 The worst severity across all checks becomes the overall status, designed to drive an automated kill-switch as well as a morning dashboard.
+
+### 4. Walk-forward evaluation & stress testing (`regime_engine/backtest.py`)
+How a strategy is evaluated matters more than its headline numbers. This module implements:
+- **Strict walk-forward protocol** — the detector only sees data up to the decision date; exposure applies from the *next* bar. No look-ahead by construction (and a unit test enforces it).
+- **Frictions as first-class citizens** — proportional transaction costs and slippage charged on every unit of turnover, with annualised turnover and cost drag reported. A strategy that works at 0 bps but dies at 10 bps is not a strategy.
+- **Stress scenarios** — synthetic crashes (flash crash, bear grind, vol explosion) injected into the tape to verify the crisis gates actually cut drawdown when it matters.
+
+```text
+$ python examples/walkforward.py
+Walk-forward (regime-gated exposure), net of frictions
+    0 bps round-trip : CAGR +0.49% | Sharpe 0.10 | maxDD -17.4% | turnover 4.6x/yr
+   20 bps round-trip : CAGR -0.41% | Sharpe -0.01 | maxDD -18.3% | cost drag 0.92%/yr
+
+Stress scenarios
+  [PASS] flash_crash:   strategy maxDD -25.8% vs asset -65.5%
+  [PASS] bear_grind:    strategy maxDD -16.2% vs asset -65.6%
+  [PASS] vol_explosion: strategy maxDD -18.7% vs asset -68.9%
+```
+
+The demo strategy is deliberately simple — the deliverable here is the **evaluation methodology**, not the alpha. Note the honest cost sensitivity: at realistic frictions the simple gating strategy roughly breaks even, while still cutting crash drawdowns by ~60–75%.
 
 ## Quickstart
 
@@ -97,14 +118,14 @@ pip install pytest
 python -m pytest -q
 ```
 
-Covers regime classification (uptrend → BULL, high-vol crash → CRISIS), the drawdown kill-switch, data-integrity edge cases, and report serialisation.
+Covers regime classification (uptrend → BULL, high-vol crash → CRISIS), the drawdown kill-switch, data-integrity edge cases, report serialisation, the no-look-ahead walk-forward protocol, cost monotonicity, and crisis engagement under stress scenarios.
 
 ## Project layout
 
 ```
-regime_engine/      regime.py · allocation.py · monitoring.py · data.py
-examples/           demo.py
-tests/              test_regime.py · test_monitoring.py
+regime_engine/      regime.py · allocation.py · monitoring.py · backtest.py · data.py
+examples/           demo.py · walkforward.py
+tests/              test_regime.py · test_monitoring.py · test_backtest.py
 docs/               regime_example.png
 ```
 
@@ -113,6 +134,11 @@ docs/               regime_example.png
 - **Explainable by construction.** Few indicators, transparent scoring; no black box deciding to de-risk your book without telling you why.
 - **Fail safe, not fail silent.** The monitor's default on bad data or a breached limit is to mark the book non-tradeable.
 
+## About
+Built by **Wendenda Nathanael Kabore** — PhD researcher in deep reinforcement learning (NTUT, Taipei) and designer of *AI Capital*, an end-to-end systematic trading system. This repository isolates the production-engineering layer of that work as a standalone, reviewable component.
+
+- GitHub: [github.com/kabNath](https://github.com/kabNath)
+- ORCID: [0009-0006-8255-8711](https://orcid.org/0009-0006-8255-8711)
 
 ## License
 MIT — see [LICENSE](LICENSE).
