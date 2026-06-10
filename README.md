@@ -1,5 +1,7 @@
 # market-regime-engine
-
+[![tests](https://github.com/kabNath/market-regime-engine/actions/workflows/tests.yml/badge.svg)](https://github.com/kabNath/market-regime-engine/actions/workflows/tests.yml)
+![Python](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12-blue)
+![License: MIT](https://img.shields.io/badge/license-MIT-green)
 **Regime detection, risk allocation, and live health monitoring for systematic trading systems.**
 
 A compact, well-tested reference implementation of the *regime + risk-control layer* that sits around a trading signal in a production systematic book. It answers the three questions a live system has to answer every day:
@@ -75,6 +77,17 @@ if not report.tradeable:
 ```
 
 Any data source works — yfinance, a broker export, or a QuantConnect dump — as long as you can hand it a `pandas` series of closes with a datetime index. A `load_ohlcv_csv` helper and a network-free synthetic generator are included.
+
+**On real market data** (e.g. with `yfinance`):
+
+```python
+import yfinance as yf
+from regime_engine import RegimeDetector
+
+close = yf.download("SPY", period="5y")["Close"].squeeze()
+print(RegimeDetector().classify_latest(close).explain())
+# e.g.  BULL (score 5/6) | trend=+0.0612, mom_mid=+0.0341, mom_long=+0.1480, ...
+```
 
 ## Tests
 
