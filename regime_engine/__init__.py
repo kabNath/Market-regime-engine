@@ -11,6 +11,13 @@ from .allocation import (
     cap_exposure,
     select_top_n,
 )
+from .backtest import (
+    CostModel,
+    WalkForwardResult,
+    walk_forward,
+    inject_crash,
+    stress_test,
+)
 from .monitoring import (
     HealthStatus,
     HealthIssue,
