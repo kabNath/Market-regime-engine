@@ -99,11 +99,6 @@ docs/               regime_example.png
 - **Explainable by construction.** Few indicators, transparent scoring; no black box deciding to de-risk your book without telling you why.
 - **Fail safe, not fail silent.** The monitor's default on bad data or a breached limit is to mark the book non-tradeable.
 
-## About
-Built by **Wendenda Nathanael Kabore** — PhD researcher in deep reinforcement learning (NTUT, Taipei) and designer of *AI Capital*, an end-to-end systematic trading system. This repository isolates the production-engineering layer of that work as a standalone, reviewable component.
-
-- GitHub: [github.com/kabNath](https://github.com/kabNath)
-- ORCID: [0009-0006-8255-8711](https://orcid.org/0009-0006-8255-8711)
 
 ## License
 MIT — see [LICENSE](LICENSE).
