@@ -28,12 +28,12 @@ Most public trading repos stop at a backtest and a Sharpe ratio. In production, 
                 price / returns
                        │
         ┌──────────────┼───────────────┐
-        ▼              ▼                ▼
-   RegimeDetector   allocation     HealthMonitor
-   6 indicators     inverse-vol    data integrity
-   → BULL/NEUTRAL   vol targeting  drawdown kill-switch
-     /BEAR/CRISIS   exposure cap   regime stability
-        │           top-N          crisis routing
+        ▼              ▼               ▼
+   RegimeDetector   allocation    HealthMonitor
+   6 indicators     inverse-vol   data integrity
+   → BULL/NEUTRAL  vol targeting  drawdown kill-switch
+     /BEAR/CRISIS  exposure cap   regime stability
+        │           top-N         crisis routing
         └──────────────┼───────────────┘
                        ▼
               HealthReport (OK / WARN / CRITICAL, tradeable flag)
