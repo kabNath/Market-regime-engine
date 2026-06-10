@@ -2,6 +2,7 @@
 [![tests](https://github.com/kabNath/market-regime-engine/actions/workflows/tests.yml/badge.svg)](https://github.com/kabNath/market-regime-engine/actions/workflows/tests.yml)
 ![Python](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12-blue)
 ![License: MIT](https://img.shields.io/badge/license-MIT-green)
+
 **Regime detection, risk allocation, and live health monitoring for systematic trading systems.**
 
 A compact, well-tested reference implementation of the *regime + risk-control layer* that sits around a trading signal in a production systematic book. It answers the three questions a live system has to answer every day:
